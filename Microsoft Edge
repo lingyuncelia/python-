@@ -1,0 +1,6 @@
+from selenium import webdriver
+driver=webdriver.Edge('C:/Users/ZSC/Downloads/msedgedriver.exe')
+url="https://cn.bing.com/?scope=web&FORM=ANNTH1"
+driver.get(url)
+#驱动器下载网站：https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
+#查找浏览器版本，打开浏览器，点击右上角三点，设置--关于M
