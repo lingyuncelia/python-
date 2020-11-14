@@ -1,0 +1,4 @@
+from selenium import webdriver
+driver=webdriver.Ie('C:/Users/ZSC/Downloads/IEDriverServer_x64.exe')
+url="https://cn.bing.com/?scope=web&FORM=ANNTH1"
+driver.get(url)
