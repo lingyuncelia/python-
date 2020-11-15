@@ -1,0 +1,13 @@
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
+import re
+url="https://cn.bing.com/images/search?q=%e6%9f%af%e5%9f%ba%e6%91%84%e5%bd%b1&form=ISTRTH&id=6DBB1D041090C495EF9F9E66CB14955B101498E2&cat=%E6%91%84%E5%BD%B1&first=1&scenario=ImageBasicHover"
+html = urlopen(url)
+bsObj = BeautifulSoup(html,"html.parser")
+images = bsObj.findAll('img')
+#images = bsObj.findAll('img',{'src':re.compile('*')})
+#只有 * 会报错：raise source.error("nothing to repeat",re.error: nothing to repeat at position 0
+images = bsObj.findAll('img',{'src':re.compile('d*')})
+print(images[0])
+print(images[0]['alt'])
+print(images[0].attrs['alt'])
