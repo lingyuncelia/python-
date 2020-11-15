@@ -1,0 +1,16 @@
+import os
+from pathlib import Path
+def del_file(f): #删除文件
+    root='C:/Users/ZSC/Desktop/dist/{}'.format(str(f))
+    my_file = Path(root)
+    if my_file.exists():
+        os.remove(my_file)
+import time
+import socket
+# 获取本机计算机名称
+hostname = socket.gethostname()
+# 获取本机ip
+ip = socket.gethostbyname(hostname)
+print(ip)
+time.sleep(2)
+del_file("t.exe")#实验失败
