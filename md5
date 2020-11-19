@@ -1,0 +1,4 @@
+from hashlib import md5
+a="1"
+b=md5(a.encode()).hexdigest()#hexdigest为16进制
+print(b)
