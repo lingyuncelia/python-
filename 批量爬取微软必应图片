@@ -1,0 +1,35 @@
+from time import altzone
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC 
+from selenium.webdriver.common.by import By
+from selenium import webdriver
+from bs4 import BeautifulSoup
+import re
+import requests
+import time
+driver=webdriver.Chrome('K:/zhusc/chromedriver.exe')
+def wait_for_you(x1,x2,i):    
+    try:
+    #查看10秒内是否出现该元素，如果元素10秒内出现就返回，否则抛出异常。
+        element=WebDriverWait(driver,10).until(
+            EC.presence_of_element_located((By.XPATH,x1))
+        )
+    finally:
+        html_doc=driver.page_source
+        soup = BeautifulSoup(html_doc,"html.parser")
+        #src_url=str(soup.find_all(alt=re.compile("查看源图像"))[0].get('src'))#第一张图片会与第二张图片重复
+        src_url=str(soup.find("div", class_="current").find_all(alt=re.compile("查看源图像"))[0].get('src'))
+        print(src_url)
+        r=requests.get(src_url)
+        with open('k:/zhusc/handsome/{}.jpg'.format(str(i)),'wb') as f:
+            f.write(r.content)
+            f.close()
+        driver.find_element_by_xpath(x2).click()  
+url="https://cn.bing.com/images/search?view=detailV2&ccid=ObO88023&id=6DD1866FC21DD72C1CBC5968E17F0A16C4A833E3&thid=OIP.ObO88023YNW8F-VqK0wzCAHaEo&mediaurl=http%3a%2f%2fi1.hdslb.com%2fbfs%2farchive%2f80a4acc61ecfeab3483fd17a45df998406e1c813.jpg&exph=602&expw=964&q=%e7%a6%b9%e5%8f%b8%e5%87%a4&simid=608010328438931513&ck=CC623D52148F1136DBBAFF22C6249741&selectedIndex=0&FORM=IRPRST&ajaxhist=0"
+driver.get(url)
+driver.maximize_window() #窗口最大化
+x1='//*[@id="mainImageWindow"]/div/div/div/div/img' #pic
+x2='//*[@id="navr"]/span'  #next pic
+for i in range(0,10):
+    wait_for_you(x1,x2,i)    
+driver.close()
