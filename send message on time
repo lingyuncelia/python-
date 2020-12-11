@@ -11,6 +11,7 @@ def send_news():
     print('消息已发送')
 # 此处会弹出二维码，扫码登录微信。
 # 同时生成 itchat.pkl 文件保存登录信息（一段时间内可以不用重新登录）
+# 可在手机退出微信登录，但程序要一直挂着
 itchat.auto_login(hotReload=True)
 # 设置发送时间
 set_time = '2020-12-11 22:22:50'
