@@ -1,0 +1,25 @@
+import itchat#pip install itchat
+#pip install apscheduler
+from apscheduler.schedulers.blocking import BlockingScheduler
+def send_news():
+    # 搜索朋友
+    my_friend = itchat.search_friends(name="朱绍海")
+    name = my_friend[0]["UserName"]
+    message = 'Life is short, you need python.'
+    # 发送消息
+    itchat.send(message, toUserName=name)
+    print('消息已发送')
+# 此处会弹出二维码，扫码登录微信。
+# 同时生成 itchat.pkl 文件保存登录信息（一段时间内可以不用重新登录）
+itchat.auto_login(hotReload=True)
+# 设置发送时间
+set_time = '2020-12-11 22:22:50'
+print("发送时间为："+set_time+"\n正在等待…")
+# 生成调度器
+schedule = BlockingScheduler()
+# 给调度器添加作业
+schedule.add_job(send_news, 'date', run_date=set_time)
+# 开启调度器
+schedule.start()
+# 作业结束自动关闭调度器
+schedule.shutdown()
