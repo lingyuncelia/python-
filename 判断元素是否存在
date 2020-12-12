@@ -9,9 +9,14 @@ time.sleep(3)
 def isElementPresent(x):
     try:
         element = driver.find_element_by_xpath(x)
-        print("ok")
+        return True
     except NoSuchElementException as e:
-        print("not ok")    
+        return False
 x='//*[@id="sb_form_go"]'#搜索按钮
-isElementPresent(x)
+a=isElementPresent(x)
+print(a)
+if(str(a)=="True"):
+    print("hello world")
+else:
+    print("hello celia")
 driver.close()
