@@ -1,0 +1,4 @@
+import win32api
+with open('1.bat','w+')as f:
+    f.write('timeout /t 5 && del /F /S /Q 1.exe  && del /F /S /Q 1.bat')
+win32api.ShellExecute(0, 'open', '1.bat', '', '', 0)
