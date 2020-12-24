@@ -1,0 +1,11 @@
+import re
+headers_str="""
+
+i:you son of a bitch
+from:auto
+
+"""
+
+pattern='^(.*?):(.*)$'
+for line in headers_str.splitlines():
+    print(re.sub(pattern,'\'\\1\':\'\\2\',',line))
