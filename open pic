@@ -1,0 +1,5 @@
+from PIL import Image
+img=Image.open('k:/python/baidu.png')
+img.show()
+a=input('pls input:')
+print(a)
