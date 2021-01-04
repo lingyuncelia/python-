@@ -1,0 +1,13 @@
+import os
+import shutil
+def readme(r,s):   #记事本，读取内容
+    f=open(r,'r+')
+    lines=f.readlines()
+    return lines[s].strip('\n')
+for i in range(0,10):
+    for root,dirs,files in os.walk('D:\XXX\XX费用\XX相片'):
+        print(root+ '\\'+ readme('d:/zhusc/名单.txt',i) +'.jpg')
+        try:
+            shutil.copy(root+'\\'+readme('d:/zhusc/名单.txt',i)+'.jpg','D:/XXX/XX费用/XX相片/pic/'+readme('d:/zhusc/名单.txt',i)+'.jpg')
+        except:
+            pass
