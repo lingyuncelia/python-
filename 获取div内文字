@@ -1,0 +1,12 @@
+import requests
+from lxml import etree
+url='http://c.biancheng.net/view/6376.html'
+x1='//*[@id="article"]/h1/text()'
+res=requests.get(url)
+html=res.content.decode('utf-8')
+doc=etree.HTML(html)
+title=doc.xpath(x1)[0]
+print(title)
+x2='//*[@id="arc-body"]//text()'  #/text()获取标签的文本   //text()获取标签以及子标签的文本 
+content_list=doc.xpath(x2)
+print(content_list)
