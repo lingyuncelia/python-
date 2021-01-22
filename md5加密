@@ -1,4 +1,0 @@
-import hashlib
-data = '我爱你'
-a=hashlib.md5(data.encode(encoding='UTF-8')).hexdigest()
-print(a)   #4f2016c6b934d55bd7120e5d0e62cce3
