@@ -1,0 +1,15 @@
+import io
+import requests
+from urllib.parse import urljoin
+from parsel import Selector
+try:
+    from PIL import Image
+except ImportError:
+    import Image
+import pytesseract
+image_url='https://vip.gxrc.com/Public/Phone/6C73242B-DE0C-490B-A715-3DF7BCED7825'
+image_body=requests.get(image_url).content
+image_stream=Image.open(io.BytesIO(image_body))
+print(pytesseract.image_to_string(image_stream))
+
+#tesseract-ocr 安装教程参考2020年8月的QQ空间日志
