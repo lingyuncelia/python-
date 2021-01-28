@@ -1,0 +1,187 @@
+import requests
+import re
+from fontTools.ttLib import TTFont
+from lxml import etree
+from aip import AipOcr  #pip install baidu-aip
+def readme(str,i):   #记事本，读取内容
+    f=open(str,'r+')
+    lines=f.readlines()
+    lines[i]=lines[i].strip('\r\n')
+    return lines[i]
+for i in range(0,6):
+#https://vip.gxrc.com/Public/Phone/4354E140-AF4E-4D46-B5C0-04AAD3A81F2F
+#https://vip.gxrc.com/Public/Phone/113F1C6B-56E2-44DF-93A0-178E25ACC62E
+#https://vip.gxrc.com/Public/Phone/FB4F6C7D-E4F9-442B-B8B8-603993782DAD
+#https://vip.gxrc.com/Public/Phone/57EE4AF3-63D4-490A-A75C-98D4E5AFA5D8
+#https://vip.gxrc.com/Public/Phone/266E2D9B-2ED9-4ED2-BE8A-565A8C91F5CD
+#https://vip.gxrc.com/Public/Phone/6C73242B-DE0C-490B-A715-3DF7BCED7825
+    r=requests.get(readme('k:/zhusc/src_url.txt',i))
+    with open('k:/zhusc/ps/{}.png'.format(str(i)),'wb') as f:#一定要png,jpg无效
+        f.write(r.content)
+
+from PIL import Image
+from pathlib import Path
+import os
+from shutil import copyfile
+
+def resize(inImage, width, height, inplace=False):
+    '''
+    将图片调整为指定尺寸
+    ----------------------------
+    参数 inImage：需要处理的图片地址
+    参数   width：预期图片宽度
+    参数  height：预期图片高度
+    参数 inplace：是否覆盖原文件
+    ----------------------------
+    返回 outImage：压缩后的图片地址
+    '''
+    if not inplace: # 如果不覆盖
+        outImage = '%s-out.%s'%(inImage.split('.')[0],inImage.split('.')[1])
+    else:
+        outImage = inImage
+    image = Image.open(inImage)
+    image = image.resize((width, height))
+    image.save(outImage)
+    print('"%s"调整成功！(尺寸：%dx%d)'%(inImage, width, height))
+    return outImage
+
+def get_size(fileName):
+    '''
+    获取图片文件的大小（KB）
+    --------------------
+    参数 fileName: 文件名
+    --------------------
+    返回 fileSize：文件的大小
+    '''
+    fileSize = os.path.getsize(fileName)
+    fileSize /= 1024 # 将单位转为KB
+    return fileSize
+
+def compress(inImage, targetSize, step=5, quality=75, inplace=False):
+    '''
+    将图片压缩到指定的大小
+    -------------------------------
+    参数    inImage：需要处理的图片地址
+    参数 targetSize：预期压缩的大小
+    参数       step：每次迭代的压缩比
+    参数    quality：初始压缩比
+    参数    inplace：是否覆盖原文件
+    -------------------------------
+    返回 outImage：压缩后的图片地址
+    '''
+    if not inplace: # 如果不覆盖
+        outImage = '%s-out.%s'%(inImage.split('.')[0], inImage.split('.')[1])
+    else:
+        outImage = inImage
+    fileSize = get_size(inImage)
+    while fileSize > targetSize:
+        image = Image.open(inImage)
+        image.save('k:/zhusc/ps/temp.jpg', quality=quality)
+        fileSize = get_size('k:/zhusc/ps/temp.jpg')
+        quality -= step # 调整压缩比
+        if quality < 0:
+            print('"%s"压缩失败！(请调整step)'%inImage)
+            return 
+    if os.path.exists('k:/zhusc/ps/temp.jpg'):
+        copyfile('k:/zhusc/ps/temp.jpg',outImage)
+        os.remove('k:/zhusc/ps/temp.jpg') # 移处临时文件
+    print('"%s"压缩成功！(大小：%.2fKB)'%(inImage, fileSize))
+    return outImage
+
+def adjust(inImage, width, height, targetSize, inplace=False):
+    '''
+    将图片调整为指定格式（包括尺寸及大小）
+    -------------------------------
+    参数    inImage：需要处理的图片地址
+    参数      width：预期图片宽度
+    参数     height：预期图片高度
+    参数 targetSize：预期压缩的大小
+    参数    inplace：是否覆盖原文件
+    -------------------------------
+    返回 outImage：调整后的图片地址
+    '''
+    if not inplace: # 如果不覆盖
+        outImage = '%s-out.%s'%(inImage.split('.')[0],inImage.split('.')[1])
+    else:
+        outImage = inImage
+    resize(inImage, width, height, inplace=inplace)
+    compress(outImage, targetSize, inplace=True)
+    return outImage
+
+def loop_reads_files(way):
+    import os
+    for root,dirs,files in os.walk(way):
+        for name in files:
+            f=(os.path.join(root, name))
+            print('width:',Image.open(f).width)
+            print('height:',Image.open(f).height)
+
+loop_reads_files('k:/zhusc/ps/')
+
+
+
+import PIL.Image as Image
+import os
+
+IMAGES_PATH = 'K:\\zhusc\\ps\\'  # 图片集地址
+IMAGES_FORMAT = ['.jpg', '.png']  # 图片格式
+
+# IMAGE_SIZE =596  # 每张小图片的大小
+IMAGE_WIDTH =138  # 每张小图片的宽度
+IMAGE_HEIGHT =20  # 每张小图片的大小
+
+IMAGE_ROW = 6  # 图片间隔，也就是合并成一张图后，一共有几行
+IMAGE_COLUMN = 1  # 图片间隔，也就是合并成一张图后，一共有几列
+IMAGE_SAVE_PATH = 'K:\\zhusc\\ps\\final.png'  # 图片转换后的地址
+
+# 获取图片集地址下的所有图片名称
+image_names = [name for name in os.listdir(IMAGES_PATH) for item in IMAGES_FORMAT if os.path.splitext(name)[1] == item]
+
+# 简单的对于参数的设定和实际图片集的大小进行数量判断
+if len(image_names) != IMAGE_ROW * IMAGE_COLUMN:
+    raise ValueError("合成图片的参数和要求的数量不能匹配！")
+
+# 定义图像拼接函数
+def image_compose():
+    to_image = Image.new('RGB', (IMAGE_COLUMN * IMAGE_WIDTH, IMAGE_ROW * IMAGE_HEIGHT)) #创建一个新图
+    # 循环遍历，把每张图片按顺序粘贴到对应位置上
+    for y in range(1, IMAGE_ROW + 1):
+        for x in range(1, IMAGE_COLUMN + 1):
+            from_image = Image.open(IMAGES_PATH + image_names[IMAGE_COLUMN * (y - 1) + x - 1])
+            to_image.paste(from_image, ((x - 1) * IMAGE_WIDTH, (y - 1) * IMAGE_HEIGHT))
+    return to_image.save(IMAGE_SAVE_PATH) # 保存新图
+image_compose() #调用函数
+
+
+import os
+from pathlib import Path
+import pytesseract
+from PIL import Image
+import time
+from aip import AipOcr  #pip install baidu-aip
+#定义常量
+APP_ID = 'XXXXXXX'
+API_KEY = 'XXXXXXXXXXXXXXXXXXX'
+SECRET_KEY = 'XXXXXXXXXXXXXXXXXXXXXXXX' 
+# 初始化AipFace对象
+client = AipOcr(APP_ID, API_KEY, SECRET_KEY)  
+# 读取图片
+def get_file_content(filePath):
+    with open(filePath, 'rb') as fp:
+        return fp.read() 
+my_file = Path("K:/zhusc/ps/result.txt")
+if my_file.exists():
+    os.remove(my_file)
+def inputme(str1):
+    f=open("K:/zhusc/ps/result.txt",'a+')
+    f.writelines(str1)
+    f.write('\n')
+image = get_file_content('K:/zhusc/ps/final.png')
+# 调用高精度版文字识别, 图片为本地图片
+res = client.basicAccurate(image)  #识别4个数字，即原图的4个数字
+try:
+    for item in res['words_result']:
+        inputme(item['words'])
+        print(item['words'])
+except:
+    pass
